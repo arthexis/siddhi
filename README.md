@@ -100,6 +100,20 @@ You should see logs indicating the HTTPS server started on port `8443`.
 - **TLS cert/key missing**: regenerate `certs/server.crt` and `certs/server.key` with the OpenSSL command above.
 - **Port 8443 already in use**: stop the process using that port or change the configured server port in `src/web_server.adb`.
 
+## OCPP 1.6 implementation status
+
+Implemented in this iteration:
+
+- OCPP version detection from request path (including `/1.6`).
+- OCPP 1.6 CALL frame validation for the array form: `[2, messageId, action, payload]`.
+- Basic action dispatch for `BootNotification`, `Heartbeat`, and `StatusNotification`.
+- Connection registry updates with parsed action context.
+
+Still pending for full 1.6 support:
+
+- WebSocket transport endpoint (`/ocpp/1.6/{chargePointId}`).
+- JSON schema-level payload validation and CALLRESULT/CALLERROR generation.
+
 ## Next steps
 
 1. Add real OCPP WebSocket endpoints:
