@@ -45,14 +45,32 @@
 
       const rows = document.getElementById('rows');
       rows.innerHTML = '';
+      const allowedStates = new Set(['Connected', 'Connecting', 'Disconnected', 'Faulted']);
+
       for (const cp of data.chargers) {
         const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${cp.id}</td>
-          <td>${cp.version}</td>
-          <td><span class="pill ${cp.state}">${cp.state}</span></td>
-          <td>${cp.lastMessage}</td>
-        `;
+
+        const idCell = document.createElement('td');
+        idCell.textContent = cp.id;
+        tr.appendChild(idCell);
+
+        const versionCell = document.createElement('td');
+        versionCell.textContent = cp.version;
+        tr.appendChild(versionCell);
+
+        const stateCell = document.createElement('td');
+        const statePill = document.createElement('span');
+        const stateText = String(cp.state);
+        statePill.classList.add('pill');
+        statePill.classList.add(allowedStates.has(stateText) ? stateText : 'Disconnected');
+        statePill.textContent = stateText;
+        stateCell.appendChild(statePill);
+        tr.appendChild(stateCell);
+
+        const messageCell = document.createElement('td');
+        messageCell.textContent = cp.lastMessage;
+        tr.appendChild(messageCell);
+
         rows.appendChild(tr);
       }
     }

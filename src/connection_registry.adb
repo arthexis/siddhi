@@ -52,11 +52,11 @@ package body Connection_Registry is
       function Snapshot return Charger_State_Array is
       begin
          if Count = 0 then
-            return (1 =>
-                      (Charge_Point_Id => To_Unbounded_String ("demo-cp-001"),
-                       Version         => V16J,
-                       State           => Connected,
-                       Last_Message    => To_Unbounded_String ("BootNotification accepted")));
+            return (1 .. 0 =>
+                      (Charge_Point_Id => To_Unbounded_String (""),
+                       Version         => Unknown,
+                       State           => Disconnected,
+                       Last_Message    => To_Unbounded_String ("")));
          end if;
 
          return Data (1 .. Count);
