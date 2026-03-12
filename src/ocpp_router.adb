@@ -1,5 +1,8 @@
 with Ada.Strings.Fixed;
+with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 with Connection_Registry;
+with OCPP16_Call_Parser;
+with OCPP16_Dispatcher;
 
 package body OCPP_Router is
    use Ada.Strings.Fixed;
@@ -19,14 +22,32 @@ package body OCPP_Router is
      (Charge_Point_Id : String;
       Path            : String;
       Frame_JSON      : String) is
-      Version : constant OCPP_Version := Detect_Version (Path);
+      Version      : constant OCPP_Version := Detect_Version (Path);
+      Parse_Outcome : OCPP16_Call_Parser.Parse_Result;
    begin
-      --  TODO: Replace with real parser/dispatcher once websocket endpoint is in place.
-      Connection_Registry.Upsert
+      if Version /= V16J then
+         Connection_Registry.Upsert
+           (Charge_Point_Id => Charge_Point_Id,
+            Version         => Version,
+            State           => Connected,
+            Last_Message    => "Unsupported for now: " & Frame_JSON);
+         return;
+      end if;
+
+      Parse_Outcome := OCPP16_Call_Parser.Parse_Action (Frame_JSON);
+      if not Parse_Outcome.Is_Valid then
+         Connection_Registry.Upsert
+           (Charge_Point_Id => Charge_Point_Id,
+            Version         => V16J,
+            State           => Faulted,
+            Last_Message    => "Invalid OCPP 1.6 CALL frame: " & To_String (Parse_Outcome.Error));
+         return;
+      end if;
+
+      OCPP16_Dispatcher.Handle_Action
         (Charge_Point_Id => Charge_Point_Id,
-         Version         => Version,
-         State           => Connected,
-         Last_Message    => Frame_JSON);
+         Action          => To_String (Parse_Outcome.Action),
+         Frame_JSON      => Frame_JSON);
    end Handle_Inbound_Frame;
 
 end OCPP_Router;
