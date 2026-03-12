@@ -1,0 +1,13 @@
+name = "ocpp_csms"
+version = "0.1.0-dev"
+description = "Ada starter for a multi-version OCPP CSMS with a connection-state dashboard"
+authors = ["Your Team"]
+maintainers = ["your-team@example.com"]
+licenses = "MIT"
+website = "https://example.com"
+tags = ["ada", "ocpp", "csms", "websocket", "ev"]
+
+executables = ["ocpp_csms"]
+
+[[depends-on]]
+# Keep base runtime-only for starter; add web/ws/json crates in next step.
