@@ -1,0 +1,17 @@
+{
+  "updatedAt": "2026-03-12T00:00:00Z",
+  "chargers": [
+    {
+      "id": "demo-cp-001",
+      "version": "1.6J",
+      "state": "Connected",
+      "lastMessage": "BootNotification accepted"
+    },
+    {
+      "id": "demo-cp-2x-01",
+      "version": "2.0.1",
+      "state": "Connecting",
+      "lastMessage": "Pending websocket upgrade"
+    }
+  ]
+}

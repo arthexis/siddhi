@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OCPP CSMS Connection State</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; background: #0f172a; color: #e2e8f0; }
+    main { max-width: 900px; margin: 32px auto; padding: 0 16px; }
+    h1 { margin-bottom: 8px; }
+    p.meta { color: #94a3b8; margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; background: #111827; border-radius: 10px; overflow: hidden; }
+    th, td { text-align: left; padding: 12px; border-bottom: 1px solid #1f2937; }
+    th { background: #1e293b; font-weight: 600; }
+    .pill { padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+    .Connected { background: #064e3b; color: #a7f3d0; }
+    .Connecting { background: #78350f; color: #fde68a; }
+    .Disconnected { background: #3f3f46; color: #e4e4e7; }
+    .Faulted { background: #7f1d1d; color: #fecaca; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>OCPP CSMS Dashboard</h1>
+    <p class="meta" id="meta">Loading state…</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Charge Point ID</th>
+          <th>OCPP Version</th>
+          <th>State</th>
+          <th>Last Message</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </main>
+
+  <script>
+    async function loadState() {
+      const res = await fetch('./state.json', { cache: 'no-store' });
+      const data = await res.json();
+      document.getElementById('meta').textContent = `Updated: ${data.updatedAt}`;
+
+      const rows = document.getElementById('rows');
+      rows.innerHTML = '';
+      const allowedStates = new Set(['Connected', 'Connecting', 'Disconnected', 'Faulted']);
+
+      for (const cp of data.chargers) {
+        const tr = document.createElement('tr');
+
+        const idCell = document.createElement('td');
+        idCell.textContent = cp.id;
+        tr.appendChild(idCell);
+
+        const versionCell = document.createElement('td');
+        versionCell.textContent = cp.version;
+        tr.appendChild(versionCell);
+
+        const stateCell = document.createElement('td');
+        const statePill = document.createElement('span');
+        const stateText = String(cp.state);
+        statePill.classList.add('pill');
+        statePill.classList.add(allowedStates.has(stateText) ? stateText : 'Disconnected');
+        statePill.textContent = stateText;
+        stateCell.appendChild(statePill);
+        tr.appendChild(stateCell);
+
+        const messageCell = document.createElement('td');
+        messageCell.textContent = cp.lastMessage;
+        tr.appendChild(messageCell);
+
+        rows.appendChild(tr);
+      }
+    }
+
+    loadState();
+    setInterval(loadState, 5000);
+  </script>
+</body>
+</html>
