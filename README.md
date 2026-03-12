@@ -24,15 +24,79 @@ This repository is a **starter template** for building an Ada-based CSMS that ca
 - `src/` – Ada sources.
 - `web/` – Static dashboard UI.
 
-## Run the dashboard preview
+## Start the service (absolute beginner walkthrough)
+
+If you are new to Ada, follow these steps exactly.
+
+### 1) Install tools
+
+You need:
+
+- **Git** (to clone the project)
+- **Python 3** (to serve the dashboard files locally)
+- **Alire (`alr`)** + GNAT (Ada compiler/toolchain)
+
+Check if they are installed:
+
+```bash
+git --version
+python3 --version
+alr --version
+```
+
+If one command says "not found", install that tool first and then continue.
+
+### 2) Clone the project
+
+```bash
+git clone <your-repo-url>
+cd siddhi
+```
+
+### 3) Build the Ada starter service
+
+```bash
+alr build
+```
+
+This compiles the Ada code and creates the executable at:
+
+- `./bin/main`
+
+### 4) Run the Ada starter service
+
+```bash
+./bin/main
+```
+
+You should see log lines like:
+
+- `OCPP CSMS Ada starter`
+- `TODO: wire HTTP + WebSocket endpoints...`
+
+> Note: this starter does not run a real HTTP/WebSocket backend yet. It seeds demo state and prints progress logs.
+
+### 5) Start the dashboard in a second terminal
+
+Keep `./bin/main` output visible, then open another terminal in the same project folder and run:
 
 ```bash
 python3 -m http.server 8080 -d web
 ```
 
-Open:
+### 6) Open the dashboard in your browser
 
 - `http://localhost:8080`
+
+If everything is working, you will see the starter dashboard UI from `web/index.html`.
+
+### 7) Troubleshooting quick fixes
+
+- **`alr: command not found`**: install Alire and reopen your terminal.
+- **`./bin/main: No such file`**: run `alr build` first and make sure it succeeds.
+- **Port 8080 already in use**: use another port, for example:
+  `python3 -m http.server 8081 -d web`
+  and open `http://localhost:8081`.
 
 ## Next steps
 
@@ -45,4 +109,3 @@ Open:
    - 2.x: `CALL`, `CALLRESULT`, `CALLERROR` frame forms.
 4. Feed the `Connection_Registry` from session lifecycle events.
 5. Expose `/api/state` from Ada backend for live dashboard updates.
-
