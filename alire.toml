@@ -10,4 +10,4 @@ tags = ["ada", "ocpp", "csms", "websocket", "ev"]
 executables = ["ocpp_csms"]
 
 [[depends-on]]
-# Keep base runtime-only for starter; add web/ws/json crates in next step.
+aws = "^25.0.0"
