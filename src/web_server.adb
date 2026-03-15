@@ -160,6 +160,11 @@ package body Web_Server is
            (Content_Type => AWS.MIME.Text_HTML,
             Message_Body => Read_File ("web/index.html"),
             Status_Code  => AWS.Messages.S200);
+      elsif URI = "/admin" or else URI = "/admin/" or else URI = "/admin/index.html" then
+         return AWS.Response.Build
+           (Content_Type => AWS.MIME.Text_HTML,
+            Message_Body => Read_File ("web/admin/index.html"),
+            Status_Code  => AWS.Messages.S200);
       elsif URI = "/state.json" then
          return AWS.Response.Build
            (Content_Type => AWS.MIME.Application_JSON,

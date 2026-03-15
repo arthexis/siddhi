@@ -19,6 +19,7 @@ This repo exists primarily to experiment with Ada for CSMS development, so we pr
   - `/api/state` as live JSON generated from `Connection_Registry`
   - `/state.json` as a compatibility endpoint for the dashboard
 - A basic web dashboard (`web/index.html`) that displays charger connection state.
+- A lightweight admin preview page (`/admin`, file: `web/admin/index.html`) for quick operational checks.
 
 > This is intentionally a foundation to iterate on. WebSocket protocol handling and full OCPP message processing are left as the next implementation steps.
 
@@ -90,6 +91,7 @@ You should see logs indicating the HTTPS server started on port `8443`.
 ### 6) Open the dashboard in your browser
 
 - `https://localhost:8443`
+- `https://localhost:8443/admin`
 
 > Because this uses a local self-signed certificate, your browser will likely show a warning. Proceed for local development.
 
