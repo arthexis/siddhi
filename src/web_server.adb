@@ -15,6 +15,7 @@ with AWS.Status;
 
 with Charger_Models;
 with Connection_Registry;
+with OCPP_Router;
 
 package body Web_Server is
    use Ada.Characters.Latin_1;
@@ -147,25 +148,135 @@ package body Web_Server is
          return "";
    end Read_File;
 
-   function Callback (Request : AWS.Status.Data) return AWS.Response.Data is
-      URI : constant String := AWS.Status.URI (Request);
+   function URL_Decode (Encoded : String) return String is
+      Decoded : Unbounded_String;
+
+      function Hex_Value (Ch : Character) return Natural is
+      begin
+         case Ch is
+            when '0' .. '9' =>
+               return Character'Pos (Ch) - Character'Pos ('0');
+            when 'A' .. 'F' =>
+               return 10 + Character'Pos (Ch) - Character'Pos ('A');
+            when 'a' .. 'f' =>
+               return 10 + Character'Pos (Ch) - Character'Pos ('a');
+            when others =>
+               return 0;
+         end case;
+      end Hex_Value;
+
+      I : Positive := Encoded'First;
    begin
-      if URI = "/api/state" then
+      while I <= Encoded'Last loop
+         if Encoded (I) = '+' then
+            Append (Decoded, ' ');
+            I := I + 1;
+         elsif Encoded (I) = '%' and then I + 2 <= Encoded'Last then
+            Append
+              (Decoded,
+               Character'Val
+                 (Hex_Value (Encoded (I + 1)) * 16 + Hex_Value (Encoded (I + 2))));
+            I := I + 3;
+         else
+            Append (Decoded, Encoded (I));
+            I := I + 1;
+         end if;
+      end loop;
+
+      return To_String (Decoded);
+   end URL_Decode;
+
+   function Query_Value (URI : String; Key : String) return String is
+      Query_Start : constant Natural := Index (URI, "?");
+      Query       : String := "";
+      Search_From : Positive := 1;
+      Pair_End    : Natural;
+      Key_Value   : Natural;
+   begin
+      if Query_Start = 0 or else Query_Start = URI'Last then
+         return "";
+      end if;
+
+      Query := URI (Query_Start + 1 .. URI'Last);
+
+      while Search_From <= Query'Last loop
+         Pair_End := Index (Query, "&", Search_From);
+         if Pair_End = 0 then
+            Pair_End := Query'Last + 1;
+         end if;
+
+         Key_Value := Index (Query, "=", Search_From);
+         if Key_Value > 0 and then Key_Value < Pair_End then
+            declare
+               Current_Key : constant String := URL_Decode (Query (Search_From .. Key_Value - 1));
+            begin
+               if Current_Key = Key then
+                  return URL_Decode (Query (Key_Value + 1 .. Pair_End - 1));
+               end if;
+            end;
+         end if;
+
+         Search_From := Pair_End + 1;
+      end loop;
+
+      return "";
+   end Query_Value;
+
+   function Path_Only (URI : String) return String is
+      Query_Start : constant Natural := Index (URI, "?");
+   begin
+      if Query_Start = 0 then
+         return URI;
+      elsif Query_Start = URI'First then
+         return "/";
+      else
+         return URI (URI'First .. Query_Start - 1);
+      end if;
+   end Path_Only;
+
+   function Callback (Request : AWS.Status.Data) return AWS.Response.Data is
+      URI  : constant String := AWS.Status.URI (Request);
+      Path : constant String := Path_Only (URI);
+   begin
+      if Path = "/api/state" then
          return AWS.Response.Build
            (Content_Type  => AWS.MIME.Application_JSON,
             Message_Body  => Build_State_JSON,
             Status_Code   => AWS.Messages.S200);
-      elsif URI = "/" or else URI = "/index.html" then
+      elsif Path = "/api/inbound" then
+         declare
+            Charge_Point_Id : constant String := Query_Value (URI, "chargePointId");
+            OCPP_Path       : constant String := Query_Value (URI, "path");
+            Frame_JSON      : constant String := Query_Value (URI, "frame");
+         begin
+            if Charge_Point_Id = "" or else OCPP_Path = "" or else Frame_JSON = "" then
+               return AWS.Response.Build
+                 (Content_Type => AWS.MIME.Application_JSON,
+                  Message_Body => "{""ok"":false,""error"":""Missing required query params: chargePointId, path, frame""}",
+                  Status_Code  => AWS.Messages.S400);
+            end if;
+
+            OCPP_Router.Handle_Inbound_Frame
+              (Charge_Point_Id => Charge_Point_Id,
+               Path            => OCPP_Path,
+               Frame_JSON      => Frame_JSON);
+
+            return AWS.Response.Build
+              (Content_Type => AWS.MIME.Application_JSON,
+               Message_Body => "{""ok"":true}",
+               Status_Code  => AWS.Messages.S200);
+         end;
+      elsif Path = "/" or else Path = "/index.html" then
          return AWS.Response.Build
            (Content_Type => AWS.MIME.Text_HTML,
             Message_Body => Read_File ("web/index.html"),
             Status_Code  => AWS.Messages.S200);
-      elsif URI = "/admin" or else URI = "/admin/" or else URI = "/admin/index.html" then
+      elsif Path = "/admin" or else Path = "/admin/" or else Path = "/admin/index.html" then
          return AWS.Response.Build
            (Content_Type => AWS.MIME.Text_HTML,
             Message_Body => Read_File ("web/admin/index.html"),
             Status_Code  => AWS.Messages.S200);
-      elsif URI = "/state.json" then
+      elsif Path = "/state.json" then
          return AWS.Response.Build
            (Content_Type => AWS.MIME.Application_JSON,
             Message_Body => Build_State_JSON,

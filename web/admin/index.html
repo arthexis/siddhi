@@ -14,6 +14,12 @@
     .label { color: #94a3b8; font-size: 13px; }
     .value { font-size: 28px; font-weight: 700; margin-top: 6px; }
     .muted { color: #94a3b8; }
+    .form-grid { display: grid; gap: 12px; }
+    label { display: grid; gap: 6px; font-size: 13px; color: #94a3b8; }
+    input, textarea { width: 100%; box-sizing: border-box; padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #020617; color: #e2e8f0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    button { width: fit-content; border: 0; border-radius: 8px; background: #0ea5e9; color: #082f49; font-weight: 700; padding: 10px 14px; cursor: pointer; }
+    button:hover { background: #38bdf8; }
+    .status { margin-top: 10px; min-height: 20px; font-size: 13px; }
   </style>
 </head>
 <body>
@@ -34,6 +40,28 @@
       <div class="value" id="charger-count">0</div>
       <p class="muted">If this stays at zero, verify your OCPP endpoint and registry update flow.</p>
     </div>
+
+    <div class="card">
+      <div class="label">Simulate inbound OCPP frame</div>
+      <p class="muted">Use this to feed live data into the registry until WebSocket transport is wired.</p>
+
+      <form id="sim-form" class="form-grid">
+        <label>
+          Charge Point ID
+          <input id="cp-id" value="demo-cp-001" />
+        </label>
+        <label>
+          OCPP path
+          <input id="cp-path" value="/ocpp/1.6/demo-cp-001" />
+        </label>
+        <label>
+          OCPP frame JSON
+          <textarea id="cp-frame" rows="4">[2,"sim-001","Heartbeat",{}]</textarea>
+        </label>
+        <button type="submit">Send frame</button>
+      </form>
+      <div id="sim-status" class="status muted"></div>
+    </div>
   </main>
 
   <script>
@@ -46,6 +74,35 @@
 
     loadAdmin();
     setInterval(loadAdmin, 5000);
+
+    document.getElementById('sim-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const chargePointId = document.getElementById('cp-id').value.trim();
+      const path = document.getElementById('cp-path').value.trim();
+      const frame = document.getElementById('cp-frame').value.trim();
+      const status = document.getElementById('sim-status');
+
+      if (!chargePointId || !path || !frame) {
+        status.textContent = 'All fields are required.';
+        return;
+      }
+
+      const params = new URLSearchParams({ chargePointId, path, frame });
+
+      try {
+        const response = await fetch(`/api/inbound?${params.toString()}`);
+        if (!response.ok) {
+          const text = await response.text();
+          status.textContent = `Failed to send frame (${response.status}): ${text}`;
+          return;
+        }
+
+        status.textContent = 'Frame accepted. Refreshing state...';
+        await loadAdmin();
+      } catch (error) {
+        status.textContent = `Request failed: ${error.message}`;
+      }
+    });
   </script>
 </body>
 </html>

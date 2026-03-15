@@ -17,9 +17,10 @@ This repo exists primarily to experiment with Ada for CSMS development, so we pr
 - An Ada HTTPS server that serves:
   - `/` and `/index.html` from `web/index.html`
   - `/api/state` as live JSON generated from `Connection_Registry`
+  - `/api/inbound?chargePointId=...&path=...&frame=...` to inject test OCPP frames into the router
   - `/state.json` as a compatibility endpoint for the dashboard
 - A basic web dashboard (`web/index.html`) that displays charger connection state.
-- A lightweight admin preview page (`/admin`, file: `web/admin/index.html`) for quick operational checks.
+- A lightweight admin preview page (`/admin`, file: `web/admin/index.html`) for quick operational checks and frame simulation.
 
 > This is intentionally a foundation to iterate on. WebSocket protocol handling and full OCPP message processing are left as the next implementation steps.
 
