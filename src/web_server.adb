@@ -188,36 +188,38 @@ package body Web_Server is
 
    function Query_Value (URI : String; Key : String) return String is
       Query_Start : constant Natural := Index (URI, "?");
-      Query       : String := "";
-      Search_From : Positive := 1;
-      Pair_End    : Natural;
-      Key_Value   : Natural;
    begin
       if Query_Start = 0 or else Query_Start = URI'Last then
          return "";
       end if;
 
-      Query := URI (Query_Start + 1 .. URI'Last);
+      declare
+         Query       : constant String := URI (Query_Start + 1 .. URI'Last);
+         Search_From : Positive := Query'First;
+         Pair_End    : Natural;
+         Key_Value   : Natural;
+      begin
+         while Search_From <= Query'Last loop
+            Pair_End := Index (Query, "&", Search_From);
+            if Pair_End = 0 then
+               Pair_End := Query'Last + 1;
+            end if;
 
-      while Search_From <= Query'Last loop
-         Pair_End := Index (Query, "&", Search_From);
-         if Pair_End = 0 then
-            Pair_End := Query'Last + 1;
-         end if;
-
-         Key_Value := Index (Query, "=", Search_From);
-         if Key_Value > 0 and then Key_Value < Pair_End then
-            declare
-               Current_Key : constant String := URL_Decode (Query (Search_From .. Key_Value - 1));
-            begin
-               if Current_Key = Key then
-                  return URL_Decode (Query (Key_Value + 1 .. Pair_End - 1));
+            Key_Value := Index (Query, "=", Search_From);
+            if Key_Value > 0 and then Key_Value < Pair_End then
+               declare
+                  Current_Key : constant String := URL_Decode (Query (Search_From .. Key_Value - 1));
+               begin
+                  if Current_Key = Key then
+                     return URL_Decode (Query (Key_Value + 1 .. Pair_End - 1));
+                  end if;
                end if;
-            end;
-         end if;
+               end;
+            end if;
 
-         Search_From := Pair_End + 1;
-      end loop;
+            Search_From := Pair_End + 1;
+         end loop;
+      end;
 
       return "";
    end Query_Value;
