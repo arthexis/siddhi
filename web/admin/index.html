@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OCPP CSMS Admin</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; background: #020617; color: #e2e8f0; }
+    main { max-width: 960px; margin: 32px auto; padding: 0 16px; }
+    .nav { display: flex; gap: 12px; margin-bottom: 20px; }
+    a { color: #7dd3fc; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .card { background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+    .label { color: #94a3b8; font-size: 13px; }
+    .value { font-size: 28px; font-weight: 700; margin-top: 6px; }
+    .muted { color: #94a3b8; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>OCPP CSMS Admin</h1>
+    <div class="nav">
+      <a href="/">Dashboard</a>
+      <a href="/admin">Admin</a>
+    </div>
+
+    <div class="card">
+      <div class="label">Last state update</div>
+      <div class="value" id="updated-at">Loading…</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Chargers tracked</div>
+      <div class="value" id="charger-count">0</div>
+      <p class="muted">If this stays at zero, verify your OCPP endpoint and registry update flow.</p>
+    </div>
+  </main>
+
+  <script>
+    async function loadAdmin() {
+      const response = await fetch('/state.json', { cache: 'no-store' });
+      const data = await response.json();
+      document.getElementById('updated-at').textContent = data.updatedAt || 'n/a';
+      document.getElementById('charger-count').textContent = Array.isArray(data.chargers) ? data.chargers.length : '0';
+    }
+
+    loadAdmin();
+    setInterval(loadAdmin, 5000);
+  </script>
+</body>
+</html>
