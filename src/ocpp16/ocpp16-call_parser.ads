@@ -1,6 +1,6 @@
 with Ada.Strings.Unbounded;
 
-package OCPP16_Call_Parser is
+package OCPP16.Call_Parser is
    use Ada.Strings.Unbounded;
 
    type Parse_Result is record
@@ -11,4 +11,4 @@ package OCPP16_Call_Parser is
 
    function Parse_Action (Frame_JSON : String) return Parse_Result;
 
-end OCPP16_Call_Parser;
+end OCPP16.Call_Parser;

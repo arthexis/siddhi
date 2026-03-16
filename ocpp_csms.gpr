@@ -1,7 +1,7 @@
 project OCPP_CSMS is
-   for Source_Dirs use ("src", "src/ocpp");
+   for Source_Dirs use ("src/core", "src/web", "src/cli", "src/ocpp", "src/ocpp16", "src/ocpp20", "src/ocpp21");
    for Object_Dir use "obj";
-   for Main use ("main.adb");
+   for Main use ("csms_web_server.adb");
 
    package Compiler is
       for Default_Switches ("Ada") use ("-gnat2022", "-O0", "-g");
