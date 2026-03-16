@@ -2,7 +2,7 @@ with Ada.Text_IO; use Ada.Text_IO;
 with OCPP_Router;
 with Web_Server;
 
-procedure Main is
+procedure CSMS_Web_Server is
 begin
    Put_Line ("OCPP CSMS Ada starter");
    Put_Line ("Starting Ada HTTPS server for dashboard and state API...");
@@ -14,4 +14,4 @@ begin
       Frame_JSON      => "[2,""startup-001"",""BootNotification"",{""chargePointVendor"":""Demo"",""chargePointModel"":""Starter""}]");
 
    Web_Server.Run;
-end Main;
+end CSMS_Web_Server;

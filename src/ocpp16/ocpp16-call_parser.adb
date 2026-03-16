@@ -3,7 +3,7 @@ with Ada.Strings;
 with Ada.Strings.Fixed;
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 
-package body OCPP16_Call_Parser is
+package body OCPP16.Call_Parser is
    use Ada.Strings.Fixed;
 
    function Skip_Spaces (Source : String; From : Positive) return Positive is
@@ -149,4 +149,4 @@ package body OCPP16_Call_Parser is
                  Error    => To_Unbounded_String ("Unexpected parse failure"));
    end Parse_Action;
 
-end OCPP16_Call_Parser;
+end OCPP16.Call_Parser;

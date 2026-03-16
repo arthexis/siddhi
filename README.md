@@ -28,7 +28,13 @@ This repo exists primarily to experiment with Ada for CSMS development, so we pr
 
 - `alire.toml` – Alire crate definition.
 - `ocpp_csms.gpr` – GNAT project file.
-- `src/` – Ada sources.
+- `src/core/` – Core routing, parsing, and registry packages.
+- `src/web/` – Ada HTTPS server package and web integration entrypoints.
+- `src/cli/` – CLI/build main procedure (`csms_web_server.adb`).
+- `src/ocpp/` – OCPP domain models and shared protocol packages.
+- `src/ocpp16/` – OCPP 1.6-specific parser/dispatcher packages.
+- `src/ocpp20/` – OCPP 2.0.x-specific operations and structures.
+- `src/ocpp21/` – OCPP 2.1-specific operations and structures.
 - `web/` – Static dashboard UI.
 - `certs/` – TLS certificate and key for local HTTPS.
 
@@ -79,12 +85,12 @@ alr build
 
 This compiles the Ada code and creates the executable at:
 
-- `./bin/main`
+- `./bin/csms_web_server`
 
 ### 5) Run the Ada HTTPS service
 
 ```bash
-./bin/main
+./bin/csms_web_server
 ```
 
 You should see logs indicating the HTTPS server started on port `8443`.
@@ -99,9 +105,9 @@ You should see logs indicating the HTTPS server started on port `8443`.
 ### 7) Troubleshooting quick fixes
 
 - **`alr: command not found`**: install Alire and reopen your terminal.
-- **`./bin/main: No such file`**: run `alr build` first and make sure it succeeds.
+- **`./bin/csms_web_server: No such file`**: run `alr build` first and make sure it succeeds.
 - **TLS cert/key missing**: regenerate `certs/server.crt` and `certs/server.key` with the OpenSSL command above.
-- **Port 8443 already in use**: stop the process using that port or change the configured server port in `src/web_server.adb`.
+- **Port 8443 already in use**: stop the process using that port or change the configured server port in `src/web/web_server.adb`.
 
 ## OCPP 1.6 implementation status
 

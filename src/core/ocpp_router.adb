@@ -1,8 +1,8 @@
 with Ada.Strings.Fixed;
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 with Connection_Registry;
-with OCPP16_Call_Parser;
-with OCPP16_Dispatcher;
+with OCPP16.Call_Parser;
+with OCPP16.Dispatcher;
 
 package body OCPP_Router is
    use Ada.Strings.Fixed;
@@ -23,7 +23,7 @@ package body OCPP_Router is
       Path            : String;
       Frame_JSON      : String) is
       Version      : constant OCPP_Version := Detect_Version (Path);
-      Parse_Outcome : OCPP16_Call_Parser.Parse_Result;
+      Parse_Outcome : OCPP16.Call_Parser.Parse_Result;
    begin
       if Version /= V16J then
          Connection_Registry.Upsert
@@ -34,7 +34,7 @@ package body OCPP_Router is
          return;
       end if;
 
-      Parse_Outcome := OCPP16_Call_Parser.Parse_Action (Frame_JSON);
+      Parse_Outcome := OCPP16.Call_Parser.Parse_Action (Frame_JSON);
       if not Parse_Outcome.Is_Valid then
          Connection_Registry.Upsert
            (Charge_Point_Id => Charge_Point_Id,
@@ -44,7 +44,7 @@ package body OCPP_Router is
          return;
       end if;
 
-      OCPP16_Dispatcher.Handle_Action
+      OCPP16.Dispatcher.Handle_Action
         (Charge_Point_Id => Charge_Point_Id,
          Action          => To_String (Parse_Outcome.Action),
          Frame_JSON      => Frame_JSON);

@@ -2,7 +2,7 @@ with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 with OCPP.Models;
 with Connection_Registry;
 
-package body OCPP16_Dispatcher is
+package body OCPP16.Dispatcher is
    use OCPP.Models;
 
    procedure Handle_Action
@@ -33,4 +33,4 @@ package body OCPP16_Dispatcher is
          Last_Message    => To_String (Note) & " | " & Frame_JSON);
    end Handle_Action;
 
-end OCPP16_Dispatcher;
+end OCPP16.Dispatcher;
