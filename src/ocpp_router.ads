@@ -1,7 +1,7 @@
-with Charger_Models;
+with OCPP.Models;
 
 package OCPP_Router is
-   use Charger_Models;
+   use OCPP.Models;
 
    function Detect_Version (Path : String) return OCPP_Version;
 
