@@ -117,6 +117,15 @@ Still pending for full 1.6 support:
 - WebSocket transport endpoint (`/ocpp/1.6/{chargePointId}`).
 - JSON schema-level payload validation and CALLRESULT/CALLERROR generation.
 
+
+## OCPP model package
+
+`src/ocpp/ocpp-models.ads` now contains both runtime OCPP domain types and the charger session DB model/instance definitions.
+
+- Runtime domain: `Charger_Session`, `OCPP_Version`, `Charger_State_Kind`
+- DB model/instance: `Charger_Session_Model`, `Session_Status`
+- Canonical table/column constants for `charger_sessions` are defined in the same package for repository/query reuse.
+
 ## Next steps
 
 1. Add real OCPP WebSocket endpoints:

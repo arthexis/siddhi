@@ -13,14 +13,14 @@ with AWS.Response;
 with AWS.Server;
 with AWS.Status;
 
-with Charger_Models;
+with OCPP.Models;
 with Connection_Registry;
 with OCPP_Router;
 
 package body Web_Server is
    use Ada.Characters.Latin_1;
    use Ada.Strings.Fixed;
-   use Charger_Models;
+   use OCPP.Models;
 
    function Escape_JSON (Text : String) return String is
       Output : Unbounded_String;

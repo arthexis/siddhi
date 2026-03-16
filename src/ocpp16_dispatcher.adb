@@ -1,9 +1,9 @@
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
-with Charger_Models;
+with OCPP.Models;
 with Connection_Registry;
 
 package body OCPP16_Dispatcher is
-   use Charger_Models;
+   use OCPP.Models;
 
    procedure Handle_Action
      (Charge_Point_Id : String;

@@ -1,8 +1,9 @@
 with Ada.Strings.Unbounded;
-with Charger_Models;
+with OCPP.Models;
 
 package body Connection_Registry is
    use Ada.Strings.Unbounded;
+   use OCPP.Models;
 
    Max_Chargers : constant Positive := 128;
 

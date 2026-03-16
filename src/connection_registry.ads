@@ -1,9 +1,9 @@
 with Ada.Strings.Unbounded;
-with Charger_Models;
+with OCPP.Models;
 
 package Connection_Registry is
    use Ada.Strings.Unbounded;
-   use Charger_Models;
+   use OCPP.Models;
 
    type Charger_State_View is record
       Charge_Point_Id : Unbounded_String;
